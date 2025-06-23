@@ -22,10 +22,16 @@ function generateProducts(amount) {
     }))
 }
 
-function getAll(limit, sort) {
+function findAllByFilter(limit, sort) {
     let filteredProducts = [...products];
     if(limit) {
-        filteredProducts = filteredProducts.slice(0, limit);
+        // filteredProducts = filteredProducts.slice(0, limit);
+        filteredProducts = filteredProducts.reduce((acc, p, i) => {
+            if(i < limit) {
+                acc.push(p);
+            }
+            return acc;
+        }, []);
     }
     if(sort) {
         filteredProducts.sort((prev,next) => {
@@ -77,16 +83,16 @@ function remove(id) {
     }))
 }
 
-function isExists(id) {
+function isExisted(id) {
     return products.some(p => p.id == id);
 }
 
 module.exports = {
         generateProducts,
-        getAll,
+        findAllByFilter,
         getOne,
         add,
         update,
         remove,
-        isExists
+        isExisted
     }

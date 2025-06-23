@@ -3,10 +3,6 @@ const productRepository = require('../../database/productRepository')
 async function generateProducts(ctx) {
     try {
         const { amount } = ctx.request.body;
-        console.log('Body:', ctx.request.body);
-        console.log('Amount:', amount);
-
-
         if (!amount || amount < 0) {
             throw new Error("Please enter amount of products")
         }
@@ -18,6 +14,7 @@ async function generateProducts(ctx) {
             message: 'Products generated successfully'
         }
     } catch (e) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             message: e.message
@@ -28,7 +25,7 @@ async function generateProducts(ctx) {
 async function getProducts(ctx) {
     try {
         const { limit, sort } = ctx.query;
-        const products = productRepository.getAll(limit, sort);
+        const products = productRepository.findAllByFilter(limit, sort);
         ctx.status = 200;
         return ctx.body = {
             success: true,
@@ -36,6 +33,7 @@ async function getProducts(ctx) {
             message: 'Get all products successfully'
         }
     } catch (e) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             error: e.message
@@ -72,6 +70,7 @@ async function getProduct(ctx) {
             message: 'Get product successfully'
         }
     } catch (error) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             error: error.message
@@ -83,7 +82,7 @@ async function getProduct(ctx) {
 async function addProduct(ctx) {
     try {
         const productData = ctx.request.body;
-        if (productRepository.isExists(productData.id)) {
+        if (productRepository.isExisted(productData.id)) {
             throw new Error('Product id already exists');
         }
         const newProduct = productRepository.add(productData);
@@ -94,6 +93,7 @@ async function addProduct(ctx) {
             message: 'Create product successfully'
         }
     } catch (error) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             error: error.message
@@ -105,7 +105,7 @@ async function addProduct(ctx) {
 async function updateProduct(ctx) {
     try {
         const { id } = ctx.params;
-        if (!productRepository.isExists(id)) {
+        if (!productRepository.isExisted(id)) {
             throw new Error('Product not found');
         }
         const newProductData = ctx.request.body;
@@ -117,6 +117,7 @@ async function updateProduct(ctx) {
             message: 'Update product successfully'
         }
     } catch (e) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             error: e.message
@@ -127,7 +128,7 @@ async function updateProduct(ctx) {
 async function removeProduct(ctx) {
     try {
         const { id } = ctx.params;
-        if (!productRepository.isExists(id)) {
+        if (!productRepository.isExisted(id)) {
             throw new Error('Product not found');
         }
         productRepository.remove(id);
@@ -138,6 +139,7 @@ async function removeProduct(ctx) {
             message: 'Remove product successfully'
         }
     } catch (e) {
+        ctx.status = 400;
         return ctx.body = {
             success: false,
             error: e.message

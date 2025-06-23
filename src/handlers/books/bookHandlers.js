@@ -30,10 +30,10 @@ async function getBooks(ctx) {
 async function getBook(ctx) {
   try {
     const {id} = ctx.params;
-    const getCurrentBook = getOneBook(id);
-    if (getCurrentBook) {
+    const currentBook = getOneBook(id);
+    if (currentBook) {
       return ctx.body = {
-        data: getCurrentBook
+        data: currentBook
       }
     }
 
