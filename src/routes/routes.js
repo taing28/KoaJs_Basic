@@ -19,6 +19,6 @@ router.get('/products/:id', productHandler.getProduct);
 router.post('/products/generate', productHandler.generateProducts);
 router.post('/products', productInputMiddleware.inputCreate, productHandler.addProduct);
 router.put('/products/:id', productInputMiddleware.inputUpdate, productHandler.updateProduct);
-router.delete('/products/:id', productHandler.removeProduct);
+router.del('/products/:id', productHandler.removeProduct);
 
 module.exports = router;
