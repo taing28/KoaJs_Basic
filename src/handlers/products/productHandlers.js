@@ -1,5 +1,10 @@
 const productRepository = require('../../database/productRepository')
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: null, message: string}|{success: boolean, message: string}>}
+ */
 async function generateProducts(ctx) {
     try {
         const { amount } = ctx.request.body;
@@ -22,6 +27,11 @@ async function generateProducts(ctx) {
     }
 }
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: [{id: number, name: string, price: number, description: string, product: string, color: string, createdAt: string, image: string}], message: string}|{success: boolean, message: string}>}
+ */
 async function getProducts(ctx) {
     try {
         const { limit, sort } = ctx.query;
@@ -41,29 +51,20 @@ async function getProducts(ctx) {
     }
 }
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: {id: number, name: string, price: number, description: string, product: string, color: string, createdAt: string, image: string}, message: string}|{success: boolean, message: string}>}
+ */
 async function getProduct(ctx) {
     try {
         const { id } = ctx.params;
-        const product = productRepository.getOne(id);
-        if (!product) {
-            throw new Error('Product not found')
+        if (!productRepository.isExisted(id)) {
+            throw new Error('Product not found');
         }
         const { field } = ctx.query;
+        const product = productRepository.getOne(id, field);
         ctx.status = 200;
-        if (field) {
-            const fields = field.split(',');
-            const response = fields.reduce((acc, curr) => {
-                acc[curr] = product[curr] || null;
-                return acc;
-            }, {})
-
-            return ctx.body = {
-                success: true,
-                data: response,
-                message: 'Get product successfully'
-            }
-        }
-
         return ctx.body = {
             success: true,
             data: product,
@@ -79,6 +80,11 @@ async function getProduct(ctx) {
     }
 }
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: {id: number, name: string, price: number, description: string, product: string, color: string, createdAt: string, image: string}, message: string}|{success: boolean, message: string}>}
+ */
 async function addProduct(ctx) {
     try {
         const productData = ctx.request.body;
@@ -102,10 +108,16 @@ async function addProduct(ctx) {
     }
 }
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: {id: number, name: string, price: number, description: string, product: string, color: string, createdAt: string, image: string}, message: string}|{success: boolean, message: string}>}
+ */
 async function updateProduct(ctx) {
     try {
         const { id } = ctx.params;
         if (!productRepository.isExisted(id)) {
+            ctx.status = 404;
             throw new Error('Product not found');
         }
         const newProductData = ctx.request.body;
@@ -125,6 +137,11 @@ async function updateProduct(ctx) {
     }
 }
 
+/**
+ * 
+ * @param ctx 
+ * @returns {Promise<{success: boolean, data: null, message: string}|{success: boolean, message: string}>}
+ */
 async function removeProduct(ctx) {
     try {
         const { id } = ctx.params;
